@@ -3,14 +3,13 @@ import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import Card from '@material-ui/core/Card';
 import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import ArrowLeftIcon from '@material-ui/icons/ArrowLeft';
-import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import Modal from '@material-ui/core/Modal';
 import Fade from '@material-ui/core/Fade';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import {connect} from 'react-redux';
 import {changeCardColumn, getCardInfo} from '../../redux/kanban-reducer';
+import {Draggable} from 'react-beautiful-dnd';
+import PanToolIcon from '@material-ui/icons/PanTool';
 
 const mapStateToProps = (state) => {
     return {
@@ -19,7 +18,7 @@ const mapStateToProps = (state) => {
     }
 };
 
-const CardsList = (props) => {
+const CardsList = ({cards, columnId, ...props}) => {
     const [open, setOpen] = React.useState(false);
 
     const handleOpen = (cardId) => {
@@ -31,33 +30,30 @@ const CardsList = (props) => {
         setOpen(false);
     };
 
-    const cards = props.cards;
-    const columnId = props.columnId;
-    const isFirstColumn = props.isFirstColumn;
-    const isLastColumn = props.isLastColumn;
     const currentColumnCards = cards.filter(card => card.columnId === columnId);
-    const cardElements = currentColumnCards.map(card => (
-        <Card key={card.id} style={{marginBottom: '5px'}}>
-            <CardActionArea onClick={() => handleOpen(card.id)}>
-                <CardContent>
-                    <Typography variant="subtitle2">
-                        {card.title}
-                    </Typography>
-                </CardContent>
-            </CardActionArea>
-            <CardActions>
-                {!isFirstColumn &&
-                    <IconButton size="small" onClick={() => props.changeCardColumn(card.id, -1)}>
-                        <ArrowLeftIcon fontSize="inherit"/>
-                    </IconButton>
-                }
-                {!isLastColumn &&
-                    <IconButton size="small" style={{marginLeft: 'auto'}} onClick={() =>  props.changeCardColumn(card.id, 1)}>
-                        <ArrowRightIcon fontSize="inherit"/>
-                    </IconButton>
-                }
-            </CardActions>
-        </Card>
+    const cardElements = currentColumnCards.map((card, index) => (
+        <Draggable key={card.id} draggableId={card.id.toString()} index={index}>
+            {(draggableProvided) => (
+                <div
+                    ref={draggableProvided.innerRef}
+                    {...draggableProvided.draggableProps}
+                    {...draggableProvided.dragHandleProps}
+                >
+                    <Card style={{marginBottom: '5px'}}>
+                        <CardActionArea onClick={() => handleOpen(card.id)}>
+                            <CardContent>
+                                <Typography variant="subtitle2">
+                                    {card.title}
+                                </Typography>
+                            </CardContent>
+                        </CardActionArea>
+                        <CardActions>
+                            <PanToolIcon fontSize="small" style={{margin: 'auto'}}/>
+                        </CardActions>
+                    </Card>
+                </div>
+            )}
+        </Draggable>
     ));
 
     return (

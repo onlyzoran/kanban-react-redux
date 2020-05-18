@@ -82,14 +82,18 @@ const kanbanReducer = (state = initialState, action) => {
     switch (action.type) {
         case CHANGE_CARD: {
             const newCards = [...state.cards];
-            const cardIndex = state.cards.findIndex(card => card.id === action.cardId);
+            const cardId = parseInt(action.cardId);
+            const oldColumnId = parseInt(action.oldColumnId);
+            const newColumnId = parseInt(action.newColumnId);
             const sortColumns = [...state.columns];
             sortColumns.sort((a, b) => (a.order > b.order) ? 1 : -1);
-            const oldColumnId = state.cards.find(card => card.id === action.cardId).columnId;
-            const oldColumn = state.columns.find(column => column.id === oldColumnId);
-            const oldColumnIndex = sortColumns.indexOf(oldColumn);
-            const newColumnId = sortColumns[oldColumnIndex + action.changer].id;
-            newCards[cardIndex].columnId = newColumnId;
+            const cardIndex = state.cards.findIndex(card => card.id === cardId);
+            const oldColumnIndex = sortColumns.findIndex(column => column.id === oldColumnId);
+            const newColumnIndex = sortColumns.findIndex(column => column.id === newColumnId);
+
+            if (Math.abs(oldColumnIndex - newColumnIndex) <= 1) {
+                newCards[cardIndex].columnId = newColumnId;
+            }
 
             return {
                 ...state,
@@ -124,10 +128,11 @@ const kanbanReducer = (state = initialState, action) => {
     }
 };
 
-const changeCard = (cardId, changer) => ({
+const changeCard = (cardId, oldColumnId, newColumnId) => ({
     type: CHANGE_CARD,
     cardId,
-    changer
+    oldColumnId,
+    newColumnId
 })
 
 const addCard = (title, columnId) => ({
@@ -141,9 +146,9 @@ const getCard = (cardId) => ({
     cardId
 })
 
-export const changeCardColumn = (cardId, changer) => {
+export const changeCardColumn = (cardId, oldColumnId, newColumnId) => {
     return (dispatch) => {
-        dispatch(changeCard(cardId, changer));
+        dispatch(changeCard(cardId, oldColumnId, newColumnId));
     }
 };
 

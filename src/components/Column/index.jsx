@@ -7,7 +7,7 @@ import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 import CardsList from '../CardsList';
 import {connect} from 'react-redux';
 import {addNewCard} from '../../redux/kanban-reducer';
-import Card from "@material-ui/core/Card";
+import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import CheckIcon from '@material-ui/icons/Check';
