@@ -23,6 +23,7 @@ const ColumnsList = ({columns, ...props}) => {
             {(droppableProvided) => (
                 <div
                     ref={droppableProvided.innerRef}
+                    style={{margin: '10px'}}
                 >
                     <Column
                         id={column.id}
